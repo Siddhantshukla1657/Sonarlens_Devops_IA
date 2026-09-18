@@ -40,6 +40,16 @@ The demo app and the analysis stack are independent: the app runs with or withou
 
 ## Step 1: Start the SonarQube server
 
+Copy `.env.example` to `.env` and set a local database password before starting:
+
+```bash
+cp .env.example .env
+```
+
+The `.env` file is ignored by Git. Compose uses its `POSTGRES_*` values for
+both SonarQube and Postgres, so the credentials stay consistent across the
+two containers.
+
 ```bash
 docker compose up -d
 ```
@@ -64,9 +74,21 @@ The server is ready when the log shows `SonarQube is operational` or `http://loc
 
 ## Step 3: Run the scan
 
-```bash
-./run-scan.sh <SONAR_HOST_URL> <SONAR_TOKEN>
+Add the token and host URL to `.env`:
+
+```dotenv
+SONAR_HOST_URL=http://host.docker.internal:9000
+SONAR_TOKEN=<your-token>
 ```
+
+Then run the scanner without exposing the token in the shell command:
+
+```bash
+./run-scan.sh
+```
+
+The script also accepts `[SONAR_HOST_URL] [SONAR_TOKEN]` arguments, which
+override the values loaded from `.env`.
 
 Under the hood this is one `docker run` of the official scanner image:
 

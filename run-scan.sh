@@ -6,21 +6,29 @@
 # to the local SonarQube server.
 #
 # Usage:
-#   ./run-scan.sh <SONAR_HOST_URL> <SONAR_TOKEN>
+#   ./run-scan.sh [SONAR_HOST_URL] [SONAR_TOKEN]
 #
 # Examples:
-#   ./run-scan.sh http://host.docker.internal:9000 <token>   # Docker Desktop
-#   ./run-scan.sh http://172.17.0.1:9000 <token>             # Linux
+#   SONAR_TOKEN=<token> ./run-scan.sh                       # Uses .env or defaults
+#   ./run-scan.sh http://host.docker.internal:9000 <token>  # Override environment
 set -euo pipefail
 
-if [ "$#" -lt 2 ]; then
-  echo "Usage: $0 <SONAR_HOST_URL> <SONAR_TOKEN>" >&2
-  exit 1
+REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+
+if [ -f "$REPO_ROOT/.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . "$REPO_ROOT/.env"
+  set +a
 fi
 
-SONAR_HOST_URL="$1"
-SONAR_TOKEN="$2"
-REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+SONAR_HOST_URL="${1:-${SONAR_HOST_URL:-http://host.docker.internal:9000}}"
+SONAR_TOKEN="${2:-${SONAR_TOKEN:-}}"
+
+if [ -z "$SONAR_TOKEN" ]; then
+  echo "SONAR_TOKEN is required. Set it in .env or pass it as the second argument." >&2
+  exit 1
+fi
 
 docker run --rm \
   -e SONAR_HOST_URL="$SONAR_HOST_URL" \

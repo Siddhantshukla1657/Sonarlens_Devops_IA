@@ -6,6 +6,9 @@ venv/
 
 # Local demo artifacts
 *.db
+.env
+.env.*
+!.env.example
 
 # Editor and OS noise
 .idea/
