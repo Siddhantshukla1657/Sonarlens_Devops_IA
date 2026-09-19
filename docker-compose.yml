@@ -20,7 +20,7 @@ services:
         hard: 65536
 
   postgres:
-    image: postgres:15
+    image: postgres:17
     container_name: sonarlens-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-sonar}
@@ -29,7 +29,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sonar -d sonar"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sonar} -d ${POSTGRES_DB:-sonar}"]
       interval: 10s
       timeout: 5s
       retries: 5

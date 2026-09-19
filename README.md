@@ -18,7 +18,7 @@ flowchart LR
     end
 
     subgraph docker["Docker"]
-        PG[("Postgres 15<br/>sonarlens-postgres")]
+        PG[("Postgres 17<br/>sonarlens-postgres")]
         SQ["SonarQube Community Edition<br/>sonarlens-sonarqube :9000"]
         SC["sonar-scanner-cli container<br/>(one-off, --rm)"]
     end
@@ -54,7 +54,7 @@ two containers.
 docker compose up -d
 ```
 
-This starts two containers: Postgres 15 (the backing database) and SonarQube Community Edition, which serves the web UI at `http://localhost:9000`.
+This starts two containers: Postgres 17 (the backing database) and SonarQube Community Edition, which serves the web UI at `http://localhost:9000`.
 
 The first startup takes roughly a minute, sometimes longer, while SonarQube initializes its database and indexes. Watch it come up with:
 
@@ -245,7 +245,7 @@ app/
   smells.py            Seeded Code Smells
   duplication.py       Seeded Duplications
   requirements.txt     Flask pin
-docker-compose.yml     SonarQube Community Edition + Postgres 15
+docker-compose.yml     SonarQube Community Edition + Postgres 17
 sonar-project.properties  Scanner configuration
 run-scan.sh            One-command scanner launcher (Linux/macOS)
 run-scan.bat           One-command scanner launcher (Windows Command Prompt)
