@@ -111,6 +111,7 @@ echo Starting SonarLens Flask Application
 echo Using: %PY_EXE%
 echo URL:   http://127.0.0.1:5000
 echo Endpoints:
+echo   GET  http://127.0.0.1:5000/          ^<-- start here (index page)
 echo   GET  http://127.0.0.1:5000/health
 echo   GET  http://127.0.0.1:5000/tasks
 echo   POST http://127.0.0.1:5000/tasks
