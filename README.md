@@ -69,7 +69,7 @@ The server is ready when the log shows `SonarQube is operational` or `http://loc
 1. Open `http://localhost:9000` and log in with `admin` / `admin`.
 2. Set a new password when prompted. Change it from the default even for a local-only demo.
 3. From the Projects view, choose Add project, then Manually.
-4. Set the project display name to `SonarLens` and the project key to `sonarlens` (both must match `sonar-project.properties`).
+4. Set the project display name to `SonarLens` and the project key to `Sonarlens` (must match `sonar-project.properties`).
 5. On the token screen, generate a token and copy it. You will pass it to the scanner in the next step. You can close the CI setup page the wizard offers afterwards.
 
 ## Step 3: Run the scan
@@ -87,7 +87,17 @@ Then run the scanner without exposing the token in the shell command:
 ./run-scan.sh
 ```
 
-The script also accepts `[SONAR_HOST_URL] [SONAR_TOKEN]` arguments, which
+On Windows, use the batch script or PowerShell:
+
+```cmd
+run-scan.bat
+```
+
+```powershell
+./run-scan.ps1
+```
+
+The scripts also accept `[SONAR_HOST_URL] [SONAR_TOKEN]` arguments, which
 override the values loaded from `.env`.
 
 Under the hood this is one `docker run` of the official scanner image:
@@ -124,17 +134,17 @@ A successful run ends with `EXECUTION SUCCESS` and a link to the dashboard. An i
 
 ## Step 4: Walk the dashboard
 
-Open the project dashboard at `http://localhost:9000/dashboard?id=sonarlens`. After the first scan, all five categories show at least one finding. The mapping below is the core of the walkthrough: one seed file per category, one short explanation per issue.
+Open the project dashboard at `http://localhost:9000/dashboard?id=Sonarlens`. After the first scan, all five categories show findings. The mapping below is the core of the walkthrough: one seed file per category, one short explanation per issue.
 
 | Seed file | SonarQube category | What it demonstrates |
 |---|---|---|
-| `app/bugs.py` | Bugs | Division with no zero check, off-by-one boundary in `get_item` (feeds `/tasks/<idx>`), possible None dereference in `print_value`, ignored return value of `sorted()` |
-| `app/vulnerabilities.py` | Vulnerabilities | OS command injection from user input, SQL built by string concatenation, MD5 password hashing |
-| `app/hotspots.py` | Security Hotspots | Hardcoded IP address, hardcoded secret key, debug flag left enabled, TLS certificate verification disabled |
-| `app/smells.py` | Code Smells | Function with too many parameters, deeply nested conditionals, dead store, class with too many methods |
-| `app/duplication.py` | Duplications | Two near-identical email validators; the duplication view highlights the shared block and the file's duplication percentage |
+| `app/bugs.py` | Bugs | Division by zero (S3518), off-by-one boundary in `get_item`, possible None dereference in `print_value` (S2259), ignored return value of `sorted()` (S2201), unreachable code (S1763), self-assignment (S1656), return in finally block (S1143) |
+| `app/vulnerabilities.py` | Vulnerabilities | OS command injection, SQL string concatenation, weak MD5/SHA-1 hashing (S4790), hardcoded credentials (S2068), insecure PRNG for security tokens (S2245), world-writable file permissions (S2612), cleartext protocols (S5332) |
+| `app/hotspots.py` | Security Hotspots | Hardcoded credentials (S2068), debug flag left enabled (S4507), TLS certificate verification disabled (S4830) |
+| `app/smells.py` | Code Smells | Mergeable nested ifs (S1066), dead store (S1854), unused local variables (S1481), unused parameters (S1172), tracked TODO (S1135) and FIXME (S1134) tags, unused private class methods (S1144) |
+| `app/duplication.py` | Duplications | Two full customer account validation pipelines exceeding SonarQube's 100-token CPD threshold |
 
-Note on classifications: SonarQube assigns rules to categories statically, and a few have moved between Vulnerability and Security Hotspot across analyzer versions. Current versions report the MD5 hashing rule as a Security Hotspot, for example. The demo's talking points hold either way: Vulnerabilities are confirmed defects, while Hotspots are security-sensitive code that requires a human review decision, which you can demonstrate live in the Security Hotspots tab by marking a finding Safe or Fix.
+Note on classifications: SonarQube assigns rules to categories statically. In recent versions of SonarQube (such as 26.9+), security-relevant rules like MD5 hashing, CSRF protection, and certificate verification are grouped under Vulnerabilities with the `former-hotspot` tag. The demo showcases both confirmed logic flaws and security-sensitive review points.
 
 ### What to point at, category by category
 
@@ -237,7 +247,10 @@ app/
   requirements.txt     Flask pin
 docker-compose.yml     SonarQube Community Edition + Postgres 15
 sonar-project.properties  Scanner configuration
-run-scan.sh            One-command scanner launcher
+run-scan.sh            One-command scanner launcher (Linux/macOS)
+run-scan.bat           One-command scanner launcher (Windows Command Prompt)
+run-scan.ps1           One-command scanner launcher (Windows PowerShell)
+run.bat                Interactive master launcher for app, server, and scan (Windows)
 docs/                  PRD, features, architecture, design, phases, todo
 ```
 

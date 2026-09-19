@@ -3,37 +3,29 @@
 The functions below are intentionally exploitable. They are defined but
 never called from main.py, so no HTTP endpoint can reach them; the file
 exists purely as a static-analysis target.
-
-Seeded flaws:
-- run_diagnostic: OS command injection from unsanitized input (S2076)
-- lookup_user:    SQL injection via string concatenation (S3649)
-- hash_password:  weak MD5 hashing for passwords (S4790)
 """
 import hashlib
 import os
+import random
 import sqlite3
 import sys
 
+# VULNERABILITY (S2068): hardcoded credentials
+DB_PASSWORD = "SuperAdminPassword123!"
+PASSWORD = "hardcoded_master_secret"
+
+# VULNERABILITY (S5332): clear-text protocol
+REMOTE_FTP_BACKUP = "ftp://backup.internal.company.com:21/db_dump.sql"
+
 
 def run_diagnostic():
-    """VULNERABILITY: command injection (rule S2076).
-
-    sys.argv is user-controlled input. Concatenating it into an
-    os.system call lets an attacker append arbitrary shell commands,
-    for example "localhost; rm -rf /". Pass an argument list to
-    subprocess with shell=False instead.
-    """
+    """VULNERABILITY (S2076): command injection from unsanitized input."""
     target = sys.argv[1]
     os.system("ping -c 1 " + target)
 
 
 def lookup_user():
-    """VULNERABILITY: SQL injection (rule S3649).
-
-    The query is built by concatenating an environment variable, a
-    user-controlled taint source, directly into SQL. A value like
-    ' OR '1'='1 returns every row. Use parameterized queries instead.
-    """
+    """VULNERABILITY (S3649): SQL injection via string concatenation."""
     username = os.environ.get("DEMO_USERNAME", "admin")
     query = "SELECT * FROM users WHERE name = '" + username + "'"
     connection = sqlite3.connect("demo.db")
@@ -46,12 +38,24 @@ def lookup_user():
 
 
 def hash_password(password):
-    """VULNERABILITY: weak password hashing (rule S4790).
-
-    MD5 is fast and unsalted, so password hashes can be brute forced or
-    rainbow-tabled. Use a slow, salted password hash such as bcrypt,
-    scrypt, or argon2. SonarQube reports this rule as a security
-    finding; in current analyzer versions it surfaces as a Security
-    Hotspot, which is itself a useful classification talking point.
-    """
+    """VULNERABILITY (S4790): weak MD5 password hashing."""
     return hashlib.md5(password.encode()).hexdigest()
+
+
+def hash_legacy_token(token):
+    """VULNERABILITY (S4790): weak SHA-1 token hashing."""
+    return hashlib.sha1(token.encode()).hexdigest()
+
+
+def generate_session_token():
+    """VULNERABILITY (S2245): pseudo-random number generator used in security context.
+
+    random is not cryptographically secure and should not be used to generate tokens.
+    """
+    token = f"{random.random()}-{random.randint(100000, 999999)}"
+    return token
+
+
+def make_world_writable(file_path):
+    """VULNERABILITY (S2612): file permissions set to world-accessible."""
+    os.chmod(file_path, 0o777)

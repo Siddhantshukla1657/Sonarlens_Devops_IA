@@ -1,17 +1,72 @@
-# Python
+# Python artifacts
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
 .venv/
 venv/
+env/
+ENV/
+venv.bak/
+env.bak/
 
-# Local demo artifacts
-*.db
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+
+# Distribution and packaging
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# SonarQube scanner local artifacts
+.scannerwork/
+
+# Local demo configuration and presenter notes
 .env
 .env.*
 !.env.example
+demo.md
 
-# Editor and OS noise
+# Database and logs
+*.db
+*.sqlite3
+*.log
+
+# Editor and IDE noise
 .idea/
 .vscode/
-.DS_Store
+*.swp
+*~
+*.sublime-project
+*.sublime-workspace
 .freebuff
+
+# Operating System noise
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+ehthumbs.db

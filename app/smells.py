@@ -1,16 +1,12 @@
 """Seeded SonarQube Code Smells example. DEMO ONLY - do not reuse this code.
 
-Code smells hurt maintainability, not correctness. None of the issues
-below affect runtime behavior; that is the point of the demonstration.
+Code smells hurt maintainability and readability without necessarily breaking
+runtime execution.
 """
 
 
-def generate_report(title, author, recipient, priority, status, due_date, category, summary):
-    """SMELL: too many parameters (SonarQube rule S107).
-
-    SonarQube's default maximum is 7; this function takes 8. A real
-    refactor would bundle the fields into a dataclass or dict.
-    """
+def generate_report(title, author, recipient, priority, status, due_date, category, summary, notes):
+    """SMELL (S107): excessive number of parameters."""
     return {
         "title": title,
         "author": author,
@@ -20,31 +16,29 @@ def generate_report(title, author, recipient, priority, status, due_date, catego
         "due_date": due_date,
         "category": category,
         "summary": summary,
+        "notes": notes,
     }
 
 
 def classify_reading(temperature, pressure, humidity):
-    """SMELL: deeply nested conditionals (SonarQube rule S3776).
-
-    Nesting reaches four levels. Guard clauses that return early would
-    flatten this into a single readable level.
-    """
+    """SMELL (S1066): nested if statements that should be merged."""
     if temperature is not None:
         if pressure is not None:
             if humidity is not None:
-                if temperature > 30 and pressure > 1000:
-                    return "hot and high pressure"
+                if temperature > 30:
+                    if pressure > 1000:
+                        return "hot and high pressure"
                 return "nominal"
     return "incomplete reading"
 
 
-def audit_task(task):
-    """SMELL: dead store (SonarQube rule S1854).
-
-    The first assignment to label is never read; it is overwritten
-    before use, so the initial value is dead.
-    """
+def audit_task(task, unused_context):
+    """SMELL (S1854, S1481, S1172): dead stores and unused variables."""
+    # S1854: initial assignment is immediately overwritten
     label = "unknown"
+    # S1481: unused local variable
+    unused_temporary_cache = {"timestamp": 12345}
+
     if task.get("priority") == "high":
         label = "escalated"
     else:
@@ -52,43 +46,22 @@ def audit_task(task):
     return label
 
 
+def plan_feature():
+    """SMELL (S1135, S1134): TODO and FIXME tags."""
+    # TODO: Implement asynchronous queue processing here
+    # FIXME: Address memory consumption issue during batch processing
+    return True
+
+
 class TaskScribe:
-    """SMELL: class with an excessive number of methods (SonarQube rule S1448).
+    """SMELL (S1144): unused private method."""
 
-    SonarQube's default method-count maximum is 10; this class defines
-    11. A class this broad almost always has more than one
-    responsibility and should be split.
-    """
+    def __init__(self, name):
+        self.name = name
 
-    def open_session(self):
-        return "session opened"
-
-    def close_session(self):
-        return "session closed"
-
-    def log_start(self):
-        return "start logged"
-
-    def log_finish(self):
-        return "finish logged"
+    def __unused_private_helper(self):
+        """S1144: class-private method never invoked."""
+        return "never called"
 
     def format_title(self, title):
         return title.strip()
-
-    def format_notes(self, notes):
-        return notes.strip()
-
-    def validate(self, task):
-        return bool(task)
-
-    def summarize(self, task):
-        return str(task)
-
-    def archive(self, task):
-        return f"archived: {task}"
-
-    def restore(self, task):
-        return f"restored: {task}"
-
-    def export(self, task):
-        return {"task": task}
