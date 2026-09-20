@@ -1,5 +1,18 @@
 # SonarLens
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+> 📋 **Looking for step-by-step setup instructions?** See [demo.md](demo.md).
+
+## Authors
+
+| Name | GitHub |
+|---|---|
+| Siddhant Shukla | [@Siddhantshukla1657](https://github.com/Siddhantshukla1657) |
+| Shubhpreet Kaur | [@ShubhpreetKDhariwal](https://github.com/ShubhpreetKDhariwal) |
+
+---
+
 SonarLens is a small, deliberately flawed Flask task manager built to showcase every major issue category that SonarQube detects: Bugs, Vulnerabilities, Security Hotspots, Code Smells, and Duplications. The analysis stack is self-hosted SonarQube Community Edition, so the entire demo runs offline through Docker with no SonarCloud account or external service.
 
 The application itself is intentionally minimal. The point of interest is the seeded issues, and each SonarQube category lives in its own clearly labeled file so a dashboard finding can always be traced back to one specific place.
